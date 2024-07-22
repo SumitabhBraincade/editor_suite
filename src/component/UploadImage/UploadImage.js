@@ -1,8 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import downloadIcon from "../../assets/icon/download_icon.svg";
 import linkIcon from "../../assets/icon/link_icon.svg";
 
-const UploadImage = () => {
+const UploadImage = ({ setShow, setCurrImage }) => {
+  const [file, setFile] = useState(null);
+  const [url, setUrl] = useState("");
+
+  useEffect(() => {
+    if (file) {
+      const blobURL = URL.createObjectURL(file);
+      setCurrImage(blobURL);
+      setShow(false);
+    }
+  }, [file]);
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleUrlChange = (e) => {
+    setUrl(e.target.value);
+  };
+
+  console.log(file);
+
   return (
     <div
       className="w-1/3 h-[500px] flex flex-col justify-center items-center gap-6 -translate-x-[50%] border-[2px] border-dashed border-[#333333] bg-[#101010] rounded-lg"
@@ -10,8 +31,13 @@ const UploadImage = () => {
         e.stopPropagation();
       }}
     >
-      <div className="flex flex-col items-center gap-3 w-full">
+      <div className="flex flex-col items-center relative gap-3 w-full">
         <div>
+          <input
+            type="file"
+            className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+            onChange={handleFileChange}
+          />
           <img src={downloadIcon}></img>
         </div>
         <p className="text-white">Drop your Image Here</p>
@@ -21,7 +47,7 @@ const UploadImage = () => {
       </div>
       <p className="text-xs font-light text-[#ffffff82]">OR</p>
       <div className="flex flex-col items-center gap-3 w-full">
-        <div>
+        <div className="cursor-pointer">
           <img src={linkIcon}></img>
         </div>
         <p className="text-white">Add an URL</p>
@@ -32,6 +58,8 @@ const UploadImage = () => {
           <input
             className="flex-1 outline-none bg-transparent text-white text-sm font-light"
             placeholder="Add an URL"
+            value={url}
+            onChange={handleUrlChange}
           ></input>
           <div className="text-[#fff] text-sm font-light">Add</div>
         </div>

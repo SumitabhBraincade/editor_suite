@@ -1,4 +1,5 @@
 import React from "react";
+import "./GradientButton.css";
 
 const GradientButton = ({
   containerStyle,
@@ -9,7 +10,7 @@ const GradientButton = ({
 }) => {
   return (
     <div
-      className={`relative bg-white rounded cursor-pointer ${containerStyle}`}
+      className={`relative gradient_button bg-white rounded cursor-pointer ${containerStyle}`}
       style={{
         backgroundImage: `
   linear-gradient(
@@ -21,6 +22,7 @@ const GradientButton = ({
     #F8C047 99%
   )
 `,
+        backgroundSize: "200% 200%",
       }}
       onClick={handleOnClick}
     >

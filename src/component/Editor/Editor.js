@@ -768,7 +768,7 @@ const Editor = () => {
           componentStyle={`w-screen h-screen flex justify-center items-center top-0 left-0 bg-[#0e0e0eba] backdrop-blur-sm`}
           setShow={setIsUpload}
         >
-          <UploadImage />
+          <UploadImage setShow={setIsUpload} setCurrImage={setCanvasImage} />
         </Popup>
       )}
     </div>
