@@ -43,11 +43,7 @@ const GoogleSingin = () => {
     }
   };
 
-  return (
-    <div>
-      <div id="google-signin-button" className="g-signin2"></div>;
-    </div>
-  );
+  return <div id="google-signin-button" className="g-signin2"></div>;
 };
 
 export default GoogleSingin;

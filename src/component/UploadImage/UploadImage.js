@@ -1,13 +1,42 @@
 import React from "react";
+import downloadIcon from "../../assets/icon/download_icon.svg";
+import linkIcon from "../../assets/icon/link_icon.svg";
 
 const UploadImage = () => {
   return (
     <div
-      className="w-[500px] h-[500px] -translate-x-[50%] border-[2px] border-dashed border-[#333333] bg-[#101010] rounded-lg"
+      className="w-1/3 h-[500px] flex flex-col justify-center items-center gap-6 -translate-x-[50%] border-[2px] border-dashed border-[#333333] bg-[#101010] rounded-lg"
       onClick={(e) => {
         e.stopPropagation();
       }}
-    ></div>
+    >
+      <div className="flex flex-col items-center gap-3 w-full">
+        <div>
+          <img src={downloadIcon}></img>
+        </div>
+        <p className="text-white">Drop your Image Here</p>
+        <p className="text-xs font-light text-[#ffffff82]">
+          Maximum file size: 10MB
+        </p>
+      </div>
+      <p className="text-xs font-light text-[#ffffff82]">OR</p>
+      <div className="flex flex-col items-center gap-3 w-full">
+        <div>
+          <img src={linkIcon}></img>
+        </div>
+        <p className="text-white">Add an URL</p>
+        <p className="text-xs font-light text-[#ffffff82]">
+          Paste a link to any image URL
+        </p>
+        <div className="h-[40px] w-1/2 flex items-center gap-3 border-[1px] border-[#5C5C5C] rounded-lg px-3">
+          <input
+            className="flex-1 outline-none bg-transparent text-white text-sm font-light"
+            placeholder="Add an URL"
+          ></input>
+          <div className="text-[#fff] text-sm font-light">Add</div>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -321,6 +321,7 @@ const Editor = () => {
   const handleArtStyle = async (style) => {
     saveToHistory();
     if (cropperRef.current) {
+      setIsLoading(true);
       const canvas = cropperRef.current.cropper.getCroppedCanvas();
       canvas.toBlob(async (blob) => {
         const formData = new FormData();
@@ -543,11 +544,11 @@ const Editor = () => {
           >
             Back to Editor
             <Popup
-              componentStyle={
+              componentStyle={`${
                 showBackPopup
-                  ? `w-[350px] h-fit top-[40px] left-5 bg-[#101010] border-[1px] border-[#1C1C1C] rounded-lg`
-                  : `w-0 h-0`
-              }
+                  ? "w-[350px] h-fit top-[40px]  left-5 bg-[#101010] border-[1px] border-[#1C1C1C] rounded-lg"
+                  : "w-0 h-0"
+              }`}
               onClose={true}
             >
               <div
@@ -717,6 +718,28 @@ const Editor = () => {
                 guides={true}
                 ready={() => disableCrop()}
               />
+              <div
+                className={`z-10 flex justify-center items-center transition-all absolute top-0 backdrop-blur-sm left-0 duration-200 ${
+                  isLoading
+                    ? "h-full w-full bg-[#121212c7] opacity-100"
+                    : "h-full w-0 opacity-0"
+                }`}
+              >
+                <div
+                  className={`flex flex-col gap-3 justify-center items-center ${
+                    !isLoading ? "hidden" : "flex"
+                  }`}
+                >
+                  <div
+                    className="w-10 h-10 rounded-full animate-spin"
+                    style={{
+                      border: "4px solid #616161",
+                      borderBottomColor: "transparent",
+                    }}
+                  ></div>
+                  <div className="text-white">Wait while we cook</div>
+                </div>
+              </div>
               <div className={`${isDrawingMode ? "block" : "hidden"}`}>
                 <canvas
                   ref={canvasRef}
