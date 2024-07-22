@@ -763,14 +763,16 @@ const Editor = () => {
         <Textbar isDraw={isDraw} />
       </div>
       <Sidebar />
-      {isUpload && (
-        <Popup
-          componentStyle={`w-screen h-screen flex justify-center items-center top-0 left-0 bg-[#0e0e0eba] backdrop-blur-sm`}
-          setShow={setIsUpload}
-        >
+      <Popup
+        componentStyle={`transition-all duration-200 ${
+          isUpload ? "w-screen h-screen opacity-100" : "w-0 h-screen opacity-0"
+        } flex justify-center items-center top-0 left-0 bg-[#0e0e0eba] backdrop-blur-sm`}
+        setShow={setIsUpload}
+      >
+        {isUpload && (
           <UploadImage setShow={setIsUpload} setCurrImage={setCanvasImage} />
-        </Popup>
-      )}
+        )}
+      </Popup>
     </div>
   );
 };
