@@ -6,7 +6,6 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
 const GoogleSingin = () => {
-  const userToken = Cookies.get("userToken");
 
   const handleCredentialResponse = (response) => {
     const data = jwtDecode(response.credential);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import leftIcon from "../../assets/icon/left_icon.svg";
 import rightIcon from "../../assets/icon/right_icon.svg";
 import ImageTab from "../ImageTab/ImageTab";
@@ -6,6 +6,7 @@ import AnimateTab from "../AnimateTab/AnimateTab";
 import GradientButton from "../../common/GradientButton";
 import { useDispatch } from "react-redux";
 import { updateShowSignIn } from "../../redux/slices/sidebarSlice";
+import Cookies from "js-cookie";
 import GoogleSingin from "../GoogleSingin/GoogleSingin";
 
 const Sidebar = () => {
@@ -13,6 +14,16 @@ const Sidebar = () => {
   const [userSignedIn, setUserSignedIn] = useState(false);
 
   const dispatch = useDispatch();
+
+  const userToken = Cookies.get("userToken");
+
+  useEffect(() => {
+    if (userToken) {
+      setUserSignedIn(true);
+    } else {
+      setUserSignedIn(false);
+    }
+  }, [userToken]);
 
   const handleImageTabClick = () => {
     setTab("image");
