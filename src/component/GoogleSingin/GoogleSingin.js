@@ -16,7 +16,7 @@ const GoogleSingin = () => {
   useEffect(() => {
     window.google.accounts.id.initialize({
       client_id:
-        "968282926242-n3sq6dn3c6cvdknf10f5hosj6vg013cl.apps.googleusercontent.com",
+        "176264459907-6gi9nidg2mb0bp3kq40bruueg7061opg.apps.googleusercontent.com",
       callback: handleCredentialResponse,
     });
     window.google.accounts.id.renderButton(
