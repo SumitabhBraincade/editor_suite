@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import downloadIcon from "../../assets/icon/download_icon.svg";
 import linkIcon from "../../assets/icon/link_icon.svg";
+import { useDispatch } from "react-redux";
+import { updateCanvasImage } from "../../redux/slices/sidebarSlice";
 
-const UploadImage = ({ setShow, setCurrImage }) => {
+const UploadImage = ({ setShow }) => {
   const [file, setFile] = useState(null);
   const [url, setUrl] = useState("");
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (file) {
       const blobURL = URL.createObjectURL(file);
-      setCurrImage(blobURL);
+      dispatch(updateCanvasImage(blobURL));
       setShow(false);
     }
   }, [file]);
@@ -22,11 +26,16 @@ const UploadImage = ({ setShow, setCurrImage }) => {
     setUrl(e.target.value);
   };
 
-  console.log(file);
+  const handleAddImageUrl = () => {
+    if (url != "") {
+      dispatch(updateCanvasImage(url));
+      setShow(false);
+    }
+  };
 
   return (
     <div
-      className="w-1/3 h-[500px] flex flex-col justify-center items-center gap-6 -translate-x-[50%] border-[2px] border-dashed border-[#333333] bg-[#101010] rounded-lg"
+      className="w-1/3 h-[500px] flex flex-col justify-center items-center gap-6 border-[2px] border-dashed border-[#333333] bg-[#101010] rounded-lg"
       onClick={(e) => {
         e.stopPropagation();
       }}
@@ -61,7 +70,12 @@ const UploadImage = ({ setShow, setCurrImage }) => {
             value={url}
             onChange={handleUrlChange}
           ></input>
-          <div className="text-[#fff] text-sm font-light">Add</div>
+          <div
+            className="text-[#fff] text-sm font-light cursor-pointer"
+            onClick={handleAddImageUrl}
+          >
+            Add
+          </div>
         </div>
       </div>
     </div>

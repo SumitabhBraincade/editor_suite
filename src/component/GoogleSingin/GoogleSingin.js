@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import "./GoogleSignin.css";
-// import { GoogleLogin } from "@react-oauth/google";
 import axiosInstance from "../Utils/axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";

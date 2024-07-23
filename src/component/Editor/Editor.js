@@ -1,24 +1,28 @@
 import React, { useEffect, useRef, useState } from "react";
-import editorBgImage from "../../assets/image/editor_bg_image.png";
-import demoImage from "../../assets/image/demo_image.png";
-import redoIcon from "../../assets/icon/redo_icon.svg";
-import undoIcon from "../../assets/icon/undo_icon.svg";
-import cropIcon from "../../assets/icon/crop_icon.svg";
-import rotateIcon from "../../assets/icon/rotate_icon.svg";
-import zoomInIcon from "../../assets/icon/zoom_in_icon.svg";
-import zoomOutIcon from "../../assets/icon/zoom_out_icon.svg";
-import horizontalFlipIcon from "../../assets/icon/horizontal_flip_icon.svg";
-import verticalFlipIcon from "../../assets/icon/vertical_flip_icon.svg";
-import noIcon from "../../assets/icon/no_icon.svg";
-import yesIcon from "../../assets/icon/yes_icon.svg";
+import {
+  editorBgImage,
+  redoIcon,
+  undoIcon,
+  cropIcon,
+  rotateIcon,
+  zoomInIcon,
+  zoomOutIcon,
+  horizontalFlipIcon,
+  verticalFlipIcon,
+  noIcon,
+  yesIcon,
+  arrowIcon,
+} from "../../assets";
 import Sidebar from "../Sidebar/Sidebar";
 import Popup from "../../common/Popup";
-import sidebar, {
+import {
   updateCallArtStyle,
   updateCallRemoveBackground,
+  updateCanvasImage,
   updateDraw,
   updateDrawPrompt,
   updateErase,
+  updateHistory,
   updateModifyPrompt,
 } from "../../redux/slices/sidebarSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +33,8 @@ import UploadImage from "../UploadImage/UploadImage";
 import axiosInstance from "../Utils/axios";
 import convertToBlobUrl from "../Utils/convertToBlobUrl";
 import { convertToBlob } from "../Utils/convertToBlob";
+import HistoryCarousel from "../HistoryCarousel/HistoryCarousel";
+import Cookies from "js-cookie";
 
 const Editor = () => {
   const cropperRef = useRef(null);
@@ -39,7 +45,6 @@ const Editor = () => {
 
   const [showBackPopup, setShowBackPopup] = useState(false);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
-  const [canvasImage, setCanvasImage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPromptBar, setShowPromptBar] = useState(false);
   const [promptValue, setPromptValue] = useState("");
@@ -48,7 +53,6 @@ const Editor = () => {
   const [flipVertical, setFlipVertical] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isErasing, setIsErasing] = useState(false);
-  const [upScallerbuttonClicked, setUpScallerButtonClicked] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
   const [context, setContext] = useState(null);
 
@@ -61,8 +65,11 @@ const Editor = () => {
   );
   const drawPrompt = useSelector((state) => state.sidebar.drawPrompt);
   const modifyPrompt = useSelector((state) => state.sidebar.modifyPrompt);
+  const canvasImage = useSelector((state) => state.sidebar.canvasImage);
 
   const dispatch = useDispatch();
+
+  const userToken = Cookies.get("userToken");
 
   const imageSuiteUrl = "/imageSuite";
 
@@ -74,7 +81,7 @@ const Editor = () => {
         const response = await fetch(imageUrl);
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
-        setCanvasImage(url);
+        dispatch(updateCanvasImage(url));
       } catch (error) {
         console.error("Error fetching image:", error);
       }
@@ -221,7 +228,7 @@ const Editor = () => {
       setRedoHistory((prevHistory) => [...prevHistory, prevState]);
 
       const cropper = cropperRef.current.cropper;
-      setCanvasImage(prevState.canvasImage);
+      dispatch(updateCanvasImage(prevState.canvasImage));
       cropper.setData(prevState.imageData);
     }
   };
@@ -231,7 +238,7 @@ const Editor = () => {
       const nextState = redoHistory[redoHistory.length - 1];
 
       const cropper = cropperRef.current.cropper;
-      setCanvasImage(nextState.canvasImage);
+      dispatch(updateCanvasImage(nextState.canvasImage));
       cropper.setData(nextState.imageData);
 
       setRedoHistory((prevHistory) => prevHistory.slice(0, -1));
@@ -244,7 +251,7 @@ const Editor = () => {
       const dataUrl = cropperRef.current.cropper
         .getCroppedCanvas()
         .toDataURL("image/png");
-      setCanvasImage(dataUrl);
+      dispatch(updateCanvasImage(dataUrl));
     }
   };
 
@@ -318,6 +325,15 @@ const Editor = () => {
     setIsUpload(true);
   };
 
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = canvasImage;
+    link.download = "downloaded_image.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleArtStyle = async (style) => {
     saveToHistory();
     if (cropperRef.current) {
@@ -337,11 +353,12 @@ const Editor = () => {
               headers: {
                 "Content-Type": "multipart/form-data",
                 accept: "application/json",
+                Authorization: `Bearer ${userToken}`,
               },
             }
           );
           const blobURL = await convertToBlobUrl(response.data.data.url);
-          setCanvasImage(blobURL);
+          dispatch(updateCanvasImage(blobURL));
           setIsLoading(false);
         } catch (error) {
           console.error("Error uploading file:", error);
@@ -369,6 +386,7 @@ const Editor = () => {
               headers: {
                 "Content-Type": "multipart/form-data",
                 accept: "application/json",
+                Authorization: `Bearer ${userToken}`,
               },
               responseType: "arraybuffer",
             }
@@ -377,7 +395,7 @@ const Editor = () => {
           const arrayBufferView = new Uint8Array(response.data);
           const blob = new Blob([arrayBufferView], { type: "image/png" });
           const url = URL.createObjectURL(blob);
-          setCanvasImage(url);
+          dispatch(updateCanvasImage(url));
         } catch (error) {
           console.error("Error uploading file:", error);
         }
@@ -411,44 +429,54 @@ const Editor = () => {
   };
 
   const callGenerativeFillAPI = async () => {
-    saveToHistory();
-    setIsLoading(true);
+    if (userToken) {
+      saveToHistory();
+      setIsLoading(true);
 
-    let originalAsset = canvasImage;
-    let invertedImage = convertCanvasToBlobURL(canvasRef);
+      let originalAsset = canvasImage;
+      let invertedImage = convertCanvasToBlobURL(canvasRef);
 
-    const formData = new FormData();
+      const formData = new FormData();
 
-    const originalAssetBlob = await base64ToBlob(originalAsset);
-    const invertedImageBlob = await base64ToBlob(invertedImage);
+      const originalAssetBlob = await base64ToBlob(originalAsset);
+      const invertedImageBlob = await base64ToBlob(invertedImage);
 
-    formData.append("image_file", originalAssetBlob, "originalAsset.png");
-    formData.append("image_name", "originalAsset.png");
-    formData.append("mask_image_file", invertedImageBlob, "invertedImage.png");
-    formData.append("mask_image_name", "invertedImage.png");
-    formData.append("prompt", drawPrompt);
-
-    try {
-      setShowPromptBar(false);
-      setPromptValue("");
-      const response = await axiosInstance.post(
-        imageSuiteUrl + "/generative_art",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            accept: "application/json",
-          },
-        }
+      formData.append("image_file", originalAssetBlob, "originalAsset.png");
+      formData.append("image_name", "originalAsset.png");
+      formData.append(
+        "mask_image_file",
+        invertedImageBlob,
+        "invertedImage.png"
       );
-      const url = response.data.data.url;
-      const blobURL = await convertToBlobUrl(url);
-      setCanvasImage(blobURL);
-    } catch (error) {
-      console.error("Error uploading file:", error);
+      formData.append("mask_image_name", "invertedImage.png");
+      formData.append("prompt", drawPrompt);
+
+      try {
+        setShowPromptBar(false);
+        setPromptValue("");
+        const response = await axiosInstance.post(
+          imageSuiteUrl + "/generative_art",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              accept: "application/json",
+              Authorization: `Bearer ${userToken}`,
+            },
+          }
+        );
+        const url = response.data.data.url;
+        const blobURL = await convertToBlobUrl(url);
+        dispatch(updateCanvasImage(blobURL));
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+      setIsLoading(false);
+    } else {
     }
-    setIsLoading(false);
   };
+
+  console.log(userToken);
 
   const callOutlineAPI = async () => {
     saveToHistory();
@@ -458,8 +486,6 @@ const Editor = () => {
     let invertedImage = convertCanvasToBlobURL(canvasRef);
     originalAsset = await convertToBlob(originalAsset);
     invertedImage = await convertToBlob(invertedImage);
-    // console.log({ originalAsset });
-    // console.log({ invertedImage });
 
     const formData = new FormData();
     formData.append("image_file", originalAsset, "originalAsset.png");
@@ -473,37 +499,108 @@ const Editor = () => {
           headers: {
             "Content-Type": "multipart/form-data",
             accept: "application/json",
+            Authorization: `Bearer ${userToken}`,
           },
           responseType: "arraybuffer",
         }
       );
 
-      const arrayBufferView = new Uint8Array(response.data);
-      const blob = new Blob([arrayBufferView], { type: "image/png" });
-      const url = URL.createObjectURL(blob);
-      setCanvasImage(url);
+      const url = response.data.data.url;
+      const blobURL = await convertToBlobUrl(url);
+      dispatch(updateCanvasImage(blobURL));
     } catch (error) {
       console.error("Error uploading file:", error);
     }
     setIsLoading(false);
   };
 
-  const iterateAsset = async () => {
+  const saveAsset = async () => {
     saveToHistory();
     setIsLoading(true);
-    const payload = {
-      iteration_type: "modify",
-      asset_url: canvasImage,
-      prompt: modifyPrompt,
-    };
+
+    let originalAsset = canvasImage;
+    let invertedImage = convertCanvasToBlobURL(canvasRef);
+    originalAsset = await convertToBlob(originalAsset);
+    invertedImage = await convertToBlob(invertedImage);
+
+    const formData = new FormData();
+    formData.append("image_file", originalAsset, "originalAsset.png");
+    formData.append("image_name", "originalAsset.png");
 
     try {
       const response = await axiosInstance.post(
-        imageSuiteUrl + "/editor/image",
-        payload
+        imageSuiteUrl + "/save",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            accept: "application/json",
+            Authorization: `Bearer ${userToken}`,
+          },
+          responseType: "arraybuffer",
+        }
       );
-      const blobURL = await convertToBlobUrl(response.data.data.ai_resp.url);
-      setCanvasImage(blobURL);
+
+      const url = response.data.data.url;
+      const blobURL = await convertToBlobUrl(url);
+      dispatch(updateCanvasImage(blobURL));
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error during API call:", error);
+      setIsLoading(false);
+    }
+  };
+
+  const getHistory = async () => {
+    try {
+      const response = await axiosInstance.get(imageSuiteUrl + "/history", {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      dispatch(updateHistory(response.data.data))
+    } catch (error) {
+      console.error("Error during API call:", error);
+    }
+  };
+
+  useEffect(() => {
+    getHistory();
+  }, []);
+
+  const iterateAsset = async () => {
+    saveToHistory();
+    setIsLoading(true);
+
+    let originalAsset = canvasImage;
+    let invertedImage = convertCanvasToBlobURL(canvasRef);
+    originalAsset = await convertToBlob(originalAsset);
+    invertedImage = await convertToBlob(invertedImage);
+
+    const formData = new FormData();
+    formData.append("image_file", originalAsset, "originalAsset.png");
+    formData.append("image_name", "originalAsset.png");
+    formData.append("iteration_type", "modify");
+    formData.append("prompt", modifyPrompt);
+    formData.append("old_prompt", " ");
+
+    try {
+      const response = await axiosInstance.post(
+        imageSuiteUrl + "/iterate/image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            accept: "application/json",
+          },
+          responseType: "arraybuffer",
+        }
+      );
+
+      const url = response.data.data.url;
+      const blobURL = await convertToBlobUrl(url);
+      dispatch(updateCanvasImage(blobURL));
       setIsLoading(false);
     } catch (error) {
       console.error("Error during API call:", error);
@@ -532,16 +629,21 @@ const Editor = () => {
   }, [callArtStyle, callRemoveBackground, drawPrompt, modifyPrompt]);
 
   return (
-    <div className="w-screen h-screen relative flex bg-[#0D0D0D] p-3">
+    <div
+      className={`w-screen h-screen relative flex bg-[#0D0D0D] p-3 ${
+        isDraw ? "draw_cursor" : ""
+      } ${isErase ? "erase_cursor " : ""}`}
+    >
       <div
         className="w-3/4 h-full bg-cover bg-no-repeat flex flex-col"
         style={{ backgroundImage: `url(${editorBgImage})` }}
       >
         <div className="flex justify-between items-center pr-4">
           <div
-            className="relative p-2 bg-[#101010] border-[1px] border-[#1C1C1C] text-[#ffffff7c] rounded-lg text-xs font-medium cursor-pointer hover:bg-[#444444] transition-all duration-200"
+            className="relative p-2 flex gap-2 bg-[#101010] border-[1px] border-[#1C1C1C] text-[#ffffff7c] rounded-lg text-xs font-medium cursor-pointer hover:bg-[#444444] transition-all duration-200"
             onClick={handleBackToEditorClick}
           >
+            <img src={arrowIcon}></img>
             Back to Editor
             <Popup
               componentStyle={`${
@@ -580,9 +682,9 @@ const Editor = () => {
           </div>
           <div
             className="relative p-2 bg-[#101010] border-[1px] border-[#1C1C1C] text-[#ffffff7c] rounded-lg text-xs font-medium cursor-pointer hover:bg-[#444444]"
-            onClick={handleUploadImageClick}
+            onClick={handleDownload}
           >
-            Upload Image
+            Download
           </div>
         </div>
         <div className="flex justify-center items-center flex-col flex-1">
@@ -769,10 +871,9 @@ const Editor = () => {
         } flex justify-center items-center top-0 left-0 bg-[#0e0e0eba] backdrop-blur-sm`}
         setShow={setIsUpload}
       >
-        {isUpload && (
-          <UploadImage setShow={setIsUpload} setCurrImage={setCanvasImage} />
-        )}
+        {isUpload && <UploadImage setShow={setIsUpload} />}
       </Popup>
+      <HistoryCarousel handleUploadImageClick={handleUploadImageClick} />
     </div>
   );
 };

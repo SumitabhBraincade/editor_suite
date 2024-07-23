@@ -4,26 +4,17 @@ import rightIcon from "../../assets/icon/right_icon.svg";
 import ImageTab from "../ImageTab/ImageTab";
 import AnimateTab from "../AnimateTab/AnimateTab";
 import GradientButton from "../../common/GradientButton";
-import { useDispatch } from "react-redux";
-import { updateShowSignIn } from "../../redux/slices/sidebarSlice";
+import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import GoogleSingin from "../GoogleSingin/GoogleSingin";
 
 const Sidebar = () => {
   const [tab, setTab] = useState("image");
-  const [userSignedIn, setUserSignedIn] = useState(false);
+  const canvasImage = useSelector((state) => state.sidebar.canvasImage);
 
   const dispatch = useDispatch();
 
   const userToken = Cookies.get("userToken");
-
-  useEffect(() => {
-    if (userToken) {
-      setUserSignedIn(true);
-    } else {
-      setUserSignedIn(false);
-    }
-  }, [userToken]);
 
   const handleImageTabClick = () => {
     setTab("image");
@@ -33,9 +24,11 @@ const Sidebar = () => {
     setTab("animate");
   };
 
+  const handleSaveClick = () => {};
+
   return (
     <div className="w-1/4 min-h-full flex flex-col bg-[#101010] border-[1px] border-[#1C1C1C] rounded-lg">
-      {!userSignedIn ? (
+      {userToken ? (
         <div className="h-fit w-full flex flex-col justify-between items-start p-4 bg-[#171717] border-[1px] border-[#1C1C1C] rounded-t-lg">
           <p className="font-medium text-white text-sm">
             Get started by signing into aicade
@@ -57,7 +50,7 @@ const Sidebar = () => {
               <img src={rightIcon} width="8px"></img>
             </div>
           </div>
-          <div>
+          <div onClick={handleSaveClick}>
             <GradientButton
               containerStyle={"h-[32px] w-[80px]"}
               titleStyle={"h-[28px] w-[76px]"}

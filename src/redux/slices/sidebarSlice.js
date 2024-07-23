@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  history: [],
   draw: false,
   erase: false,
   artStyle: "",
@@ -9,12 +10,16 @@ const initialState = {
   drawPrompt: "",
   modifyPrompt: "",
   canvasDataUrl: "",
+  canvasImage: "",
 };
 
 const sidebarSlice = createSlice({
   name: "sidebar",
   initialState,
   reducers: {
+    updateHistory: (state, action) => {
+      state.history = action.payload;
+    },
     updateDraw: (state, action) => {
       state.draw = action.payload;
     },
@@ -39,10 +44,14 @@ const sidebarSlice = createSlice({
     updateCanvasDataUrl: (state, action) => {
       state.canvasDataUrl = action.payload;
     },
+    updateCanvasImage: (state, action) => {
+      state.canvasImage = action.payload;
+    },
   },
 });
 
 export const {
+  updateHistory,
   updateDraw,
   updateErase,
   updateArtStyle,
@@ -51,5 +60,6 @@ export const {
   updateDrawPrompt,
   updateModifyPrompt,
   updateCanvasDataUrl,
+  updateCanvasImage,
 } = sidebarSlice.actions;
 export default sidebarSlice.reducer;
