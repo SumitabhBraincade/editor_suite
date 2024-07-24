@@ -108,6 +108,8 @@ const Editor = () => {
     dispatch(updateDraw(false));
   };
 
+  const handleDrawYesClick = () => {};
+
   useEffect(() => {
     if (isDrawingMode && canvasRef.current) {
       const canvas = canvasRef.current;
@@ -433,51 +435,44 @@ const Editor = () => {
   };
 
   const callGenerativeFillAPI = async () => {
-    if (userToken) {
-      saveToHistory();
-      setIsLoading(true);
+    saveToHistory();
+    setIsLoading(true);
 
-      let originalAsset = canvasImage;
-      let invertedImage = convertCanvasToBlobURL(canvasRef);
+    let originalAsset = canvasImage;
+    let invertedImage = convertCanvasToBlobURL(canvasRef);
 
-      const formData = new FormData();
+    const formData = new FormData();
 
-      const originalAssetBlob = await base64ToBlob(originalAsset);
-      const invertedImageBlob = await base64ToBlob(invertedImage);
+    const originalAssetBlob = await base64ToBlob(originalAsset);
+    const invertedImageBlob = await base64ToBlob(invertedImage);
 
-      formData.append("image_file", originalAssetBlob, "originalAsset.png");
-      formData.append("image_name", "originalAsset.png");
-      formData.append(
-        "mask_image_file",
-        invertedImageBlob,
-        "invertedImage.png"
+    formData.append("image_file", originalAssetBlob, "originalAsset.png");
+    formData.append("image_name", "originalAsset.png");
+    formData.append("mask_image_file", invertedImageBlob, "invertedImage.png");
+    formData.append("mask_image_name", "invertedImage.png");
+    formData.append("prompt", drawPrompt);
+
+    try {
+      setShowPromptBar(false);
+      setPromptValue("");
+      const response = await axiosInstance.post(
+        imageSuiteUrl + "/generative_art",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            accept: "application/json",
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
       );
-      formData.append("mask_image_name", "invertedImage.png");
-      formData.append("prompt", drawPrompt);
-
-      try {
-        setShowPromptBar(false);
-        setPromptValue("");
-        const response = await axiosInstance.post(
-          imageSuiteUrl + "/generative_art",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              accept: "application/json",
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
-        );
-        const url = response.data.data.url;
-        const blobURL = await convertToBlobUrl(url);
-        dispatch(updateCanvasImage(blobURL));
-      } catch (error) {
-        console.error("Error uploading file:", error);
-      }
-      setIsLoading(false);
-    } else {
+      const url = response.data.data.url;
+      const blobURL = await convertToBlobUrl(url);
+      dispatch(updateCanvasImage(blobURL));
+    } catch (error) {
+      console.error("Error uploading file:", error);
     }
+    setIsLoading(false);
   };
 
   const handleUpScalerClick = async () => {
@@ -650,6 +645,7 @@ const Editor = () => {
       dispatch(updateCallRemoveBackground(false));
     }
     if (drawPrompt.length != 0) {
+      console.log("aagya ");
       callGenerativeFillAPI();
       dispatch(updateDraw(false));
       dispatch(updateDrawPrompt(""));
@@ -788,7 +784,10 @@ const Editor = () => {
                     Draw on the Image and prompt below to generate art
                   </div>
                   <div className="flex">
-                    <div className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200">
+                    <div
+                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                      onClick={handleDrawYesClick}
+                    >
                       <img src={yesIcon} width="15px"></img>
                     </div>
                     <div

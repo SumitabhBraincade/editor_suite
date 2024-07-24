@@ -55,7 +55,7 @@ const Textbar = ({ isDraw }) => {
         </div>
         <div className="grow">
           <input
-            className="w-full bg-transparent outline-none text-[#ffffff38] text-sm"
+            className="w-full h-[40px] bg-transparent outline-none text-[#ffffff38] text-sm"
             placeholder={
               isInputFocused
                 ? ""
