@@ -28,10 +28,10 @@ const BackgroundRemoval = () => {
           <img src={bgRemoveButtonIcon}></img>
           Remove BG
         </div>
-        <div className="h-10 w-[48%] m-[1%] text-xs font-light text-[#fdfdfd7e] flex gap-2 justify-center items-center bg-[#2729301f] border-[1px] border-[#242424] rounded cursor-pointer radial_gradient_bg">
+        {/* <div className="h-10 w-[48%] m-[1%] text-xs font-light text-[#fdfdfd7e] flex gap-2 justify-center items-center bg-[#2729301f] border-[1px] border-[#242424] rounded cursor-pointer radial_gradient_bg">
           <img src={outlineIcon}></img>
           Outline
-        </div>
+        </div> */}
       </div>
     </div>
   );
