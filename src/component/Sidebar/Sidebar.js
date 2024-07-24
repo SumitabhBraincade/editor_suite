@@ -56,7 +56,7 @@ const Sidebar = () => {
 
   return (
     <div className="w-1/4 min-h-full flex flex-col bg-[#101010] border-[1px] border-[#1C1C1C] rounded-lg">
-      {userToken ? (
+      {!userToken ? (
         <div className="h-fit w-full flex flex-col justify-between items-start p-4 bg-[#171717] border-[1px] border-[#1C1C1C] rounded-t-lg">
           <p className="font-medium text-white text-sm">
             Get started by signing into aicade
