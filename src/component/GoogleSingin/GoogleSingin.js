@@ -12,17 +12,32 @@ const GoogleSingin = () => {
   };
 
   useEffect(() => {
-    window.google.accounts.id.initialize({
-      client_id:
-        "176264459907-6gi9nidg2mb0bp3kq40bruueg7061opg.apps.googleusercontent.com",
-      callback: handleCredentialResponse,
-    });
-    window.google.accounts.id.renderButton(
-      document.getElementById("google-signin-button"),
-      { theme: "filled_blue", size: "large" }
-    );
-    window.google.accounts.id.prompt();
+    const initializeGoogleSignIn = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id:
+            "176264459907-6gi9nidg2mb0bp3kq40bruueg7061opg.apps.googleusercontent.com",
+          callback: handleCredentialResponse,
+        });
+      } else {
+        console.error("Google Sign-In script not loaded.");
+      }
+    };
+
+    if (document.readyState === "complete") {
+      initializeGoogleSignIn();
+    } else {
+      window.addEventListener("load", initializeGoogleSignIn);
+    }
+
+    return () => {
+      window.removeEventListener("load", initializeGoogleSignIn);
+    };
   }, []);
+
+  const handleSignInClick = () => {
+    window.google.accounts.id.prompt();
+  };
 
   const loginUser = async (data) => {
     try {
@@ -40,7 +55,18 @@ const GoogleSingin = () => {
     }
   };
 
-  return <div id="google-signin-button" className="g-signin2"></div>;
+  return (
+    <button
+      onClick={handleSignInClick}
+      className="w-full h-[40px] rounded-lg text-white font-semibold font-sans"
+      style={{
+        background:
+          "radial-gradient(66.32% 116.23% at 48.37% 13.1%, #FF8956 0%, #FF4D00 100%)",
+      }}
+    >
+      Sign In
+    </button>
+  );
 };
 
 export default GoogleSingin;
