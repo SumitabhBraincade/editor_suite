@@ -672,8 +672,10 @@ const Editor = () => {
       } ${isErase ? "erase_cursor " : ""}`}
     >
       <div
-        className="w-3/4 h-full bg-cover bg-no-repeat flex flex-col"
-        style={{ backgroundImage: `url(${editorBgImage})` }}
+        className="w-3/4 h-full bg-cover bg-center bg-no-repeat flex flex-col"
+        style={{
+          backgroundImage: `url(${editorBgImage})`,
+        }}
       >
         <div className="flex justify-between items-center pr-4">
           <div className="flex gap-2 items-center">

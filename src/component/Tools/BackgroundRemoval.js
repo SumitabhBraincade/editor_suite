@@ -18,7 +18,7 @@ const BackgroundRemoval = () => {
     <div className="pb-3 pt-6 px-5 flex flex-col items-start justify-between transition-all duration-200 hover:bg-[#171717]">
       <div className="flex gap-2 justify-start items-center">
         <img src={backgroundRemovalIcon}></img>
-        <p className="text-xs font-medium text-[#fff]">Generative Brush</p>
+        <p className="text-xs font-medium text-[#fff]">Background Removal</p>
       </div>
       <div className="w-full flex mt-4">
         <div

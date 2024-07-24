@@ -1,4 +1,4 @@
-import editorBgImage from "./image/editor_bg_image.png";
+import editorBgImage from "./image/editor_bg.svg";
 import demoImage from "./image/demo_image.png";
 
 import redoIcon from "./icon/redo_icon.svg";
