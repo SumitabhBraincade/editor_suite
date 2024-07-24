@@ -18,6 +18,8 @@ import Popup from "../../common/Popup";
 import {
   updateCallArtStyle,
   updateCallRemoveBackground,
+  updateCallSaveImage,
+  updateCallUpscaler,
   updateCanvasImage,
   updateDraw,
   updateDrawPrompt,
@@ -63,6 +65,8 @@ const Editor = () => {
   const callRemoveBackground = useSelector(
     (state) => state.sidebar.callRemoveBackground
   );
+  const callSaveImage = useSelector((state) => state.sidebar.callSaveImage);
+  const callUpscaler = useSelector((state) => state.sidebar.callUpscaler);
   const drawPrompt = useSelector((state) => state.sidebar.drawPrompt);
   const modifyPrompt = useSelector((state) => state.sidebar.modifyPrompt);
   const canvasImage = useSelector((state) => state.sidebar.canvasImage);
@@ -476,7 +480,39 @@ const Editor = () => {
     }
   };
 
-  console.log(userToken);
+  const handleUpScalerClick = async () => {
+    saveToHistory();
+    setIsLoading(true);
+    if (cropperRef.current) {
+      const canvas = cropperRef.current.cropper.getCroppedCanvas();
+      canvas.toBlob(async (blob) => {
+        const formData = new FormData();
+        formData.append("image_file", blob, "canvas_image.png");
+        formData.append("image_name", "canvas_image.png");
+
+        try {
+          const response = await axiosInstance.post(
+            imageSuiteUrl + "/upscaler",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                accept: "application/json",
+              },
+              responseType: "arraybuffer",
+            }
+          );
+
+          const url = response.data.data.url;
+          const blobURL = await convertToBlobUrl(url);
+          dispatch(updateCanvasImage(blobURL));
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
+        setIsLoading(false);
+      }, "image/png");
+    }
+  };
 
   const callOutlineAPI = async () => {
     saveToHistory();
@@ -515,13 +551,10 @@ const Editor = () => {
   };
 
   const saveAsset = async () => {
-    saveToHistory();
     setIsLoading(true);
 
     let originalAsset = canvasImage;
-    let invertedImage = convertCanvasToBlobURL(canvasRef);
     originalAsset = await convertToBlob(originalAsset);
-    invertedImage = await convertToBlob(invertedImage);
 
     const formData = new FormData();
     formData.append("image_file", originalAsset, "originalAsset.png");
@@ -537,13 +570,8 @@ const Editor = () => {
             accept: "application/json",
             Authorization: `Bearer ${userToken}`,
           },
-          responseType: "arraybuffer",
         }
       );
-
-      const url = response.data.data.url;
-      const blobURL = await convertToBlobUrl(url);
-      dispatch(updateCanvasImage(blobURL));
       setIsLoading(false);
     } catch (error) {
       console.error("Error during API call:", error);
@@ -559,15 +587,20 @@ const Editor = () => {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      dispatch(updateHistory(response.data.data))
+
+      dispatch(updateHistory(response.data.data));
     } catch (error) {
       console.error("Error during API call:", error);
     }
   };
 
   useEffect(() => {
+    if (callSaveImage) {
+      saveAsset();
+      dispatch(updateCallSaveImage(false));
+    }
     getHistory();
-  }, []);
+  }, [callSaveImage]);
 
   const iterateAsset = async () => {
     saveToHistory();
@@ -594,7 +627,6 @@ const Editor = () => {
             "Content-Type": "multipart/form-data",
             accept: "application/json",
           },
-          responseType: "arraybuffer",
         }
       );
 
@@ -626,7 +658,17 @@ const Editor = () => {
       iterateAsset();
       dispatch(updateModifyPrompt(""));
     }
-  }, [callArtStyle, callRemoveBackground, drawPrompt, modifyPrompt]);
+    if (callUpscaler) {
+      handleUpScalerClick();
+      dispatch(updateCallUpscaler(false));
+    }
+  }, [
+    callArtStyle,
+    callRemoveBackground,
+    drawPrompt,
+    modifyPrompt,
+    callUpscaler,
+  ]);
 
   return (
     <div
@@ -639,7 +681,14 @@ const Editor = () => {
         style={{ backgroundImage: `url(${editorBgImage})` }}
       >
         <div className="flex justify-between items-center pr-4">
-          <div
+          <div className="flex gap-2 items-center">
+            <p className="text-white font-semibold">aicade</p>
+            <div className="w-1 h-1 bg-[#ffffff78] rounded-full"></div>
+            <p className="uppercase text-sm font-extralight text-[#ffffff78]">
+              Image Editor
+            </p>
+          </div>
+          {/* <div
             className="relative p-2 flex gap-2 bg-[#101010] border-[1px] border-[#1C1C1C] text-[#ffffff7c] rounded-lg text-xs font-medium cursor-pointer hover:bg-[#444444] transition-all duration-200"
             onClick={handleBackToEditorClick}
           >
@@ -679,7 +728,7 @@ const Editor = () => {
                 </div>
               </div>
             </Popup>
-          </div>
+          </div> */}
           <div
             className="relative p-2 bg-[#101010] border-[1px] border-[#1C1C1C] text-[#ffffff7c] rounded-lg text-xs font-medium cursor-pointer hover:bg-[#444444]"
             onClick={handleDownload}

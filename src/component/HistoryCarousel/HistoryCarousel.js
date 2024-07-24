@@ -35,7 +35,7 @@ const HistoryCarousel = ({ handleUploadImageClick }) => {
   };
 
   return (
-    <div className="absolute flex flex-col gap-2 top-[50%] -translate-y-[50%] left-2 max-h-[360px] w-fit">
+    <div className="absolute flex flex-col gap-2 top-[50%] -translate-y-[50%] left-2 max-h-[300px] w-fit">
       <div
         className="flex items-center justify-center w-full h-[30px] rounded-lg bg-[#171717] hover:bg-[#242424] border-[1px] border-[#1C1C1C] cursor-pointer"
         onClick={handleUpArrow}
@@ -43,11 +43,11 @@ const HistoryCarousel = ({ handleUploadImageClick }) => {
         <img className="rotate-90" src={arrowIcon}></img>
       </div>
       <div
-        className="h-full w-full flex flex-col gap-3 overflow-hidden"
+        className="h-full w-full flex flex-col gap-2 overflow-hidden"
         ref={scrollableContainerRef}
       >
         <div
-          className="size-[100px] min-h-[100px] flex justify-center items-center transition-all duration-200 bg-[#171717] hover:bg-[#242424] border-[1px] border-[#1C1C1C] rounded-lg cursor-pointer"
+          className="size-[80px] min-h-[80px] flex justify-center items-center transition-all duration-200 bg-[#171717] hover:bg-[#242424] border-[1px] border-[#1C1C1C] rounded-lg cursor-pointer"
           onClick={handleUploadImageClick}
         >
           <img src={addIcon}></img>
@@ -55,7 +55,7 @@ const HistoryCarousel = ({ handleUploadImageClick }) => {
         {history.map((each, index) => (
           <div
             key={index}
-            className="size-[100px] min-h-[100px] transition-all duration-200 bg-[#171717] hover:bg-[#242424] border-[1px] border-[#1C1C1C] rounded-lg cursor-pointer bg-cover bg-no-repeat"
+            className="size-[80px] min-h-[80px] transition-all duration-200 bg-[#171717] hover:bg-[#242424] border-[1px] border-[#1C1C1C] rounded-lg cursor-pointer bg-cover bg-no-repeat"
             style={{ backgroundImage: `url(${each.url})` }}
             onClick={() => handleImageClick(each)}
           ></div>

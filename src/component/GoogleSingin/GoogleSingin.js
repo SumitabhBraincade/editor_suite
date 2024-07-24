@@ -3,9 +3,9 @@ import "./GoogleSignin.css";
 import axiosInstance from "../Utils/axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { setUserToken } from "../Utils/auth";
 
 const GoogleSingin = () => {
-
   const handleCredentialResponse = (response) => {
     const data = jwtDecode(response.credential);
     loginUser(data);
@@ -34,8 +34,7 @@ const GoogleSingin = () => {
       });
 
       const userToken = response.data.data.id;
-      console.log(userToken);
-      Cookies.set("userToken", userToken, { expires: 0.5 });
+      setUserToken(userToken);
     } catch (error) {
       console.error("Error during API call", error.response.data);
     }

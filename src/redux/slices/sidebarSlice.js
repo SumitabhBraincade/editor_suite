@@ -11,6 +11,8 @@ const initialState = {
   modifyPrompt: "",
   canvasDataUrl: "",
   canvasImage: "",
+  callSaveImage: false,
+  callUpscaler: false,
 };
 
 const sidebarSlice = createSlice({
@@ -47,6 +49,12 @@ const sidebarSlice = createSlice({
     updateCanvasImage: (state, action) => {
       state.canvasImage = action.payload;
     },
+    updateCallSaveImage: (state, action) => {
+      state.callSaveImage = action.payload;
+    },
+    updateCallUpscaler: (state, action) => {
+      state.callUpscaler = action.payload;
+    },
   },
 });
 
@@ -61,5 +69,7 @@ export const {
   updateModifyPrompt,
   updateCanvasDataUrl,
   updateCanvasImage,
+  updateCallSaveImage,
+  updateCallUpscaler,
 } = sidebarSlice.actions;
 export default sidebarSlice.reducer;

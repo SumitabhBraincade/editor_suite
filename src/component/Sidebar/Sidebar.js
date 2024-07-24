@@ -7,14 +7,40 @@ import GradientButton from "../../common/GradientButton";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import GoogleSingin from "../GoogleSingin/GoogleSingin";
+import { checkTokenExpiration } from "../Utils/auth";
+import { updateCallSaveImage } from "../../redux/slices/sidebarSlice";
 
 const Sidebar = () => {
   const [tab, setTab] = useState("image");
-  const canvasImage = useSelector((state) => state.sidebar.canvasImage);
+  const [userToken, setUserToken] = useState(Cookies.get("userToken"));
 
+  const canvasImage = useSelector((state) => state.sidebar.canvasImage);
   const dispatch = useDispatch();
 
-  const userToken = Cookies.get("userToken");
+  useEffect(() => {
+    const handleUserTokenChange = () => {
+      setUserToken(Cookies.get("userToken"));
+    };
+
+    window.addEventListener("userTokenChange", handleUserTokenChange);
+
+    return () => {
+      window.removeEventListener("userTokenChange", handleUserTokenChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (checkTokenExpiration()) {
+        Cookies.remove("userToken");
+        Cookies.remove("tokenExpiration");
+        setUserToken(null);
+        window.dispatchEvent(new Event("userTokenChange"));
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleImageTabClick = () => {
     setTab("image");
@@ -24,7 +50,9 @@ const Sidebar = () => {
     setTab("animate");
   };
 
-  const handleSaveClick = () => {};
+  const handleSaveClick = () => {
+    dispatch(updateCallSaveImage(true));
+  };
 
   return (
     <div className="w-1/4 min-h-full flex flex-col bg-[#101010] border-[1px] border-[#1C1C1C] rounded-lg">
