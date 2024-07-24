@@ -645,7 +645,6 @@ const Editor = () => {
       dispatch(updateCallRemoveBackground(false));
     }
     if (drawPrompt.length != 0) {
-      console.log("aagya ");
       callGenerativeFillAPI();
       dispatch(updateDraw(false));
       dispatch(updateDrawPrompt(""));

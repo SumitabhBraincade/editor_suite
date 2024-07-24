@@ -6,7 +6,6 @@ import { jwtDecode } from "jwt-decode";
 import { setUserToken } from "../Utils/auth";
 
 const GoogleSingin = () => {
-  
   const handleCredentialResponse = (response) => {
     const data = jwtDecode(response.credential);
     loginUser(data);
@@ -20,6 +19,11 @@ const GoogleSingin = () => {
             "176264459907-6gi9nidg2mb0bp3kq40bruueg7061opg.apps.googleusercontent.com",
           callback: handleCredentialResponse,
         });
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signin-button"),
+          { theme: "filled_blue", size: "large" }
+        );
+        window.google.accounts.id.prompt();
       } else {
         console.error("Google Sign-In script not loaded.");
       }
@@ -35,10 +39,6 @@ const GoogleSingin = () => {
       window.removeEventListener("load", initializeGoogleSignIn);
     };
   }, []);
-
-  const handleSignInClick = () => {
-    window.google.accounts.id.prompt();
-  };
 
   const loginUser = async (data) => {
     try {
@@ -56,18 +56,7 @@ const GoogleSingin = () => {
     }
   };
 
-  return (
-    <button
-      onClick={handleSignInClick}
-      className="w-full h-[40px] rounded-lg text-white font-semibold font-sans"
-      style={{
-        background:
-          "radial-gradient(66.32% 116.23% at 48.37% 13.1%, #FF8956 0%, #FF4D00 100%)",
-      }}
-    >
-      Sign In
-    </button>
-  );
+  return <div id="google-signin-button" className="g-signin2"></div>;
 };
 
 export default GoogleSingin;
