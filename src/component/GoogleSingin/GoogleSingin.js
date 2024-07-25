@@ -44,14 +44,14 @@ const GoogleSingin = () => {
     console.log(data);
     try {
       const response = await axiosInstance.post("/user/verify", {
-        accountType: "user",
+        accountType: "google",
         accountId: data.sub,
         name: data.name,
         email: data.email,
         profileImage: data.picture,
       });
 
-      const userToken = response.data.data.id;
+      const userToken = response.data.data.profileId;
       setUserToken(userToken);
     } catch (error) {
       console.error("Error during API call", error.response.data);
