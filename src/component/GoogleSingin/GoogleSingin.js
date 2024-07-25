@@ -41,9 +41,11 @@ const GoogleSingin = () => {
   }, []);
 
   const loginUser = async (data) => {
+    console.log(data);
     try {
       const response = await axiosInstance.post("/user/verify", {
-        profileId: data.sub,
+        accountType: "user",
+        accountId: data.sub,
         name: data.name,
         email: data.email,
         profileImage: data.picture,

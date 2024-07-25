@@ -5,6 +5,7 @@ import {
   updateCallArtStyle,
 } from "../../redux/slices/sidebarSlice";
 import artStyleIcon from "../../assets/icon/art_style_icon.svg";
+import { animeBg } from "../../assets";
 
 const ArtStyle = () => {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ const ArtStyle = () => {
       id: 1,
       name: "Animated",
       tag: "anime",
+      bgImage: animeBg,
     },
     {
       id: 2,
@@ -52,7 +54,7 @@ const ArtStyle = () => {
   };
 
   return (
-    <div className="border-[1px] h-fit border-[#242424] pb-3 pt-6 px-5 flex flex-col items-start justify-between transition-all duration-200 hover:bg-[#171717]">
+    <div className="border-b h-fit border-[#242424] pb-3 pt-6 px-5 flex flex-col items-start justify-between transition-all duration-200 hover:bg-[#171717]">
       <div className="flex gap-2 justify-start items-center">
         <img src={artStyleIcon}></img>
         <p className="text-xs font-medium text-[#fff]">Art Style</p>
@@ -64,12 +66,17 @@ const ArtStyle = () => {
         {artStyleArray.map((each) => (
           <div
             key={each.id}
-            className={`h-10 w-[31%] m-[1%] text-xs font-light text-white flex justify-center items-center bg-[#2729301f] border-[1px] rounded cursor-pointer hover:bg-[#444444] transition-all duration-200 ${
-              artStyle === each.tag ? "border-[#A1A1A1]" : "border-[#242424]"
+            className={`h-10 w-[31%] m-[1%] relative border-[1px] rounded cursor-pointer hover:bg-[#444444] overflow-hidden bg-contain bg-center ${
+              artStyle === each.tag
+                ? "border-[#A1A1A1] text-white"
+                : "border-[#242424]"
             }`}
+            style={{ backgroundImage: `url(${each.bgImage})` }}
             onClick={() => handleArtStyleClick(each)}
           >
-            {each.name}
+            <div className="h-full w-full text-xs font-light text-[#fdfdfd7e] bg-[#272930a0] hover:bg-[#27293035] hover:text-white hover:scale-x-110 flex justify-center items-center transition-all duration-200">
+              {each.name}
+            </div>
           </div>
         ))}
       </div>
@@ -81,7 +88,7 @@ const ArtStyle = () => {
         <div
           className={`w-full h-full ${
             artStyle === "" ? "hidden" : "flex"
-          } text-white text-xs font-light justify-center items-center bg-[#2729301f] border-[1px] border-[#242424] rounded cursor-pointer transition-all duration-200 radial_gradient_bg`}
+          } text-[#fdfdfd7e] hover:text-white text-xs font-light justify-center items-center bg-[#2729301f] border-[1px] border-[#242424] rounded cursor-pointer transition-all duration-200 radial_gradient_bg`}
           onClick={handleApplyStyleClick}
         >
           Apply Style

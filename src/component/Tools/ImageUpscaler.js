@@ -11,7 +11,7 @@ const ImageUpscaler = () => {
   };
 
   return (
-    <div className="border-[1px] border-[#242424] pb-3 pt-6 px-5 flex flex-col items-start justify-between transition-all duration-200 hover:bg-[#171717]">
+    <div className="border-b border-[#242424] pb-3 pt-6 px-5 flex flex-col items-start justify-between transition-all duration-200 hover:bg-[#171717]">
       <div className="flex gap-2 justify-start items-center">
         <img src={upscalerIcon}></img>
         <p className="text-xs font-medium text-[#fff]">Image Upscaler</p>
@@ -21,7 +21,7 @@ const ImageUpscaler = () => {
       </p>
       <div className="w-full flex">
         <div
-          className="h-10 w-[98%] m-[1%] text-xs font-light text-[#fdfdfd7e] flex justify-center items-center bg-[#2729301f] border-[1px] border-[#242424] rounded cursor-pointer radial_gradient_bg"
+          className="h-10 w-[98%] m-[1%] text-xs font-light text-[#fdfdfd7e] hover:text-white flex justify-center items-center bg-[#2729301f] border-[1px] border-[#242424] rounded cursor-pointer radial_gradient_bg"
           onClick={handleUpscaleClick}
         >
           Upscale

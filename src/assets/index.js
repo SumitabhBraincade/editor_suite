@@ -1,6 +1,4 @@
 import editorBgImage from "./image/editor_bg.svg";
-import demoImage from "./image/demo_image.png";
-
 import redoIcon from "./icon/redo_icon.svg";
 import undoIcon from "./icon/undo_icon.svg";
 import cropIcon from "./icon/crop_icon.svg";
@@ -20,9 +18,10 @@ import generativeBrushIcon from "./icon/generative_brush_icon.svg";
 import drawIcon from "./icon/draw_icon.svg";
 import eraseIcon from "./icon/erase_icon.svg";
 
+import animeBg from "../assets/image/anime_bg.png";
+
 export {
   editorBgImage,
-  demoImage,
   redoIcon,
   undoIcon,
   cropIcon,
@@ -41,4 +40,5 @@ export {
   generativeBrushIcon,
   drawIcon,
   eraseIcon,
+  animeBg,
 };

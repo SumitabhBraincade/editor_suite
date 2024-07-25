@@ -57,6 +57,7 @@ const Editor = () => {
   const [isErasing, setIsErasing] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
   const [context, setContext] = useState(null);
+  const [downloadMouseIn, setDownloadMouseIn] = useState(false);
 
   const isDraw = useSelector((state) => state.sidebar.draw);
   const isErase = useSelector((state) => state.sidebar.erase);
@@ -677,7 +678,7 @@ const Editor = () => {
           backgroundImage: `url(${editorBgImage})`,
         }}
       >
-        <div className="flex justify-between items-center pr-4">
+        <div className="flex justify-between items-center pr-4 backdrop-blur-sm">
           <div className="flex gap-2 items-center">
             <p className="text-white font-semibold">aicade</p>
             <div className="w-1 h-1 bg-[#ffffff78] rounded-full"></div>
@@ -727,13 +728,30 @@ const Editor = () => {
             </Popup>
           </div> */}
           <div
-            className="relative p-2 bg-[#101010] border-[1px] border-[#1C1C1C] text-[#ffffff7c] rounded-lg text-xs font-medium cursor-pointer hover:bg-[#444444]"
+            className="relative p-2 bg-[#101010] flex items-center gap-1 border-[1px] border-[#1C1C1C] text-[#ffffff7c] hover:text-white rounded-lg text-xs font-medium cursor-pointer hover:bg-[#444444]"
             onClick={handleDownload}
+            onMouseEnter={() => setDownloadMouseIn(true)}
+            onMouseLeave={() => setDownloadMouseIn(false)}
           >
+            <svg
+              width="20"
+              height="16"
+              viewBox="0 0 61 61"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 30.5L30.5 43M30.5 43L43 30.5M30.5 43V10.5M15.5 50.5H45.5"
+                stroke={downloadMouseIn ? "#fff" : "#ffffff7c"}
+                stroke-width="6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
             Download
           </div>
         </div>
-        <div className="flex justify-center items-center flex-col flex-1">
+        <div className="flex justify-center items-center flex-col flex-1 backdrop-blur-sm">
           <div className="">
             <div className="h-8 mb-8 relative">
               <Popup
@@ -804,13 +822,13 @@ const Editor = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex">
                     <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
                       onClick={handleUndo}
                     >
                       <img src={undoIcon} width="15px"></img>
                     </div>
                     <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-r-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-r-lg border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
                       onClick={handleRedo}
                     >
                       <img src={redoIcon} width="15px"></img>
@@ -818,37 +836,37 @@ const Editor = () => {
                   </div>
                   <div className="flex">
                     <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
                       onClick={enableCrop}
                     >
                       <img src={cropIcon} width="15px"></img>
                     </div>
                     <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
                       onClick={handleRotateRight}
                     >
                       <img src={rotateIcon} width="15px"></img>
                     </div>
                     <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
                       onClick={handleZoomIn}
                     >
                       <img src={zoomInIcon} width="15px"></img>
                     </div>
                     <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
                       onClick={handleZoomOut}
                     >
                       <img src={zoomOutIcon} width="15px"></img>
                     </div>
                     <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
                       onClick={handleFlipHorizontal}
                     >
                       <img src={horizontalFlipIcon} width="15px"></img>
                     </div>
                     <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-r-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-r-lg border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
                       onClick={handleFlipVertical}
                     >
                       <img src={verticalFlipIcon} width="15px"></img>
