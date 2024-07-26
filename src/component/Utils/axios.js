@@ -6,10 +6,12 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-const userToken = Cookies.get("userToken");
-
 axiosInstance.interceptors.request.use(
   (config) => {
+    const userToken = Cookies.get("access_token");
+    if (userToken) {
+      config.headers.Authorization = `Bearer ${userToken}`;
+    }
     return config;
   },
   (error) => {

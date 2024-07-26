@@ -75,7 +75,7 @@ const Editor = () => {
 
   const dispatch = useDispatch();
 
-  const userToken = Cookies.get("userToken");
+  const userToken = Cookies.get("access_token");
 
   const imageSuiteUrl = "/imageSuite";
 
