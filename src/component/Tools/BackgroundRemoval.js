@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateCallRemoveBackground } from "../../redux/slices/sidebarSlice";
 import {
   backgroundRemovalIcon,
@@ -12,12 +12,18 @@ const BackgroundRemoval = () => {
 
   const dispatch = useDispatch();
 
+  const isBgRemove = useSelector((state) => state.sidebar.callRemoveBackground);
+
   const handleRemoveBackgroundClick = () => {
     dispatch(updateCallRemoveBackground(true));
   };
 
   return (
-    <div className="pb-3 pt-6 px-5 flex flex-col items-start justify-between transition-all duration-200 hover:bg-[#171717]">
+    <div
+      className={`pb-3 pt-6 px-5 flex flex-col items-start justify-between transition-all duration-200 ${
+        isBgRemove ? "bg-[#171717]" : ""
+      }`}
+    >
       <div className="flex gap-2 justify-start items-center">
         <img src={backgroundRemovalIcon}></img>
         <p className="text-xs font-medium text-[#fff]">Background Removal</p>

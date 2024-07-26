@@ -38,9 +38,11 @@ const Textbar = ({ isDraw }) => {
   return (
     <div className="w-full h-14 mb-4 flex justify-center items-center">
       <div
-        className={`flex items-center gap-3 w-1/2 h-12 rounded-lg p-2 ${
+        className={`flex items-center gap-3 w-1/2 max-w-[600px] h-12 rounded-lg p-2 ${
           isInputFocused ? "bg-[#171717]" : "bg-[#101010]"
-        } border-[1px] border-[#1C1C1C] hover:border-[#505050] transition-all duration-200 hover:shadow-3xl`}
+        } border-[1px] border-[#1C1C1C] hover:border-[#505050] ${
+          isDraw ? "border-[#505050] shadow-3xl" : "border-[#1C1C1C]"
+        } transition-all duration-200 hover:shadow-3xl`}
       >
         <div className="w-fit p-2 bg-[#2A2A2A] text-[#ffffff7c] rounded-lg text-xs font-medium cursor-pointer">
           {isDraw ? "DRAW" : "MODIFY"}

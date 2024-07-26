@@ -7,6 +7,9 @@ const GenerativeBrush = () => {
   const [drawMouseIn, setDrawMouseIn] = useState(false);
   const [eraseMouseIn, setEraseMouseIn] = useState(false);
 
+  const isDraw = useSelector((state) => state.sidebar.draw);
+  const isErase = useSelector((state) => state.sidebar.erase);
+
   const dispatch = useDispatch();
 
   const handleDrawClick = () => {
@@ -19,7 +22,11 @@ const GenerativeBrush = () => {
   };
 
   return (
-    <div className="border-b border-[#242424] pb-3 pt-6 px-5 flex flex-col items-start justify-between transition-all duration-200 hover:bg-[#171717]">
+    <div
+      className={`border-b border-[#242424] pb-3 pt-6 px-5 flex flex-col items-start justify-between transition-all duration-200 ${
+        isDraw || isErase ? "bg-[#171717]" : ""
+      }`}
+    >
       <div className="flex gap-2 justify-start items-center">
         <img src={generativeBrushIcon}></img>
         <p className="text-xs font-medium text-[#fff]">Generative Brush</p>

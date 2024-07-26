@@ -37,6 +37,7 @@ import convertToBlobUrl from "../Utils/convertToBlobUrl";
 import { convertToBlob } from "../Utils/convertToBlob";
 import HistoryCarousel from "../HistoryCarousel/HistoryCarousel";
 import Cookies from "js-cookie";
+import { Tooltip } from "@mui/material";
 
 const Editor = () => {
   const cropperRef = useRef(null);
@@ -406,6 +407,7 @@ const Editor = () => {
         } catch (error) {
           console.error("Error uploading file:", error);
         }
+        dispatch(updateCallRemoveBackground(false));
         setIsLoading(false);
       }, "image/png");
     }
@@ -505,6 +507,7 @@ const Editor = () => {
         } catch (error) {
           console.error("Error uploading file:", error);
         }
+        dispatch(updateCallUpscaler(false));
         setIsLoading(false);
       }, "image/png");
     }
@@ -643,7 +646,6 @@ const Editor = () => {
     }
     if (callRemoveBackground) {
       handleRemoveBackground();
-      dispatch(updateCallRemoveBackground(false));
     }
     if (drawPrompt.length != 0) {
       callGenerativeFillAPI();
@@ -656,7 +658,6 @@ const Editor = () => {
     }
     if (callUpscaler) {
       handleUpScalerClick();
-      dispatch(updateCallUpscaler(false));
     }
   }, [
     callArtStyle,
@@ -771,18 +772,22 @@ const Editor = () => {
                     Crop Image
                   </div>
                   <div className="flex">
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={handleCropOkay}
-                    >
-                      <img src={yesIcon} width="15px"></img>
-                    </div>
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-r-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={enableCrop}
-                    >
-                      <img src={noIcon} width="12px"></img>
-                    </div>
+                    <Tooltip title="Apply" placement="top">
+                      <div
+                        className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                        onClick={handleCropOkay}
+                      >
+                        <img src={yesIcon} width="15px"></img>
+                      </div>
+                    </Tooltip>
+                    <Tooltip title="Close Crop" placement="top">
+                      <div
+                        className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-r-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                        onClick={enableCrop}
+                      >
+                        <img src={noIcon} width="12px"></img>
+                      </div>
+                    </Tooltip>
                   </div>
                 </div>
               </Popup>
@@ -799,21 +804,27 @@ const Editor = () => {
                     isDraw ? "flex" : "hidden"
                   } items-center justify-between overflow-hidden`}
                 >
-                  <div className="text-[#ffffff85] font-light text-sm">
-                    Draw on the Image and prompt below to generate art
-                  </div>
-                  <div className="flex">
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={handleDrawYesClick}
-                    >
-                      <img src={yesIcon} width="15px"></img>
+                  <div className={`${isDraw ? "flex" : "hidden"}`}>
+                    <div className="text-[#ffffff85] font-light text-left text-sm">
+                      Draw on the Image and prompt below to generate art
                     </div>
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-r-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={handleDrawNoClick}
-                    >
-                      <img src={noIcon} width="12px"></img>
+                    <div className="flex">
+                      <Tooltip title="Apply" placement="top">
+                        <div
+                          className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                          onClick={handleDrawYesClick}
+                        >
+                          <img src={yesIcon} width="15px"></img>
+                        </div>
+                      </Tooltip>
+                      <Tooltip title="Close Draw" placement="top">
+                        <div
+                          className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-r-lg border-[#1C1C1C] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                          onClick={handleDrawNoClick}
+                        >
+                          <img src={noIcon} width="12px"></img>
+                        </div>
+                      </Tooltip>
                     </div>
                   </div>
                 </div>
@@ -821,56 +832,72 @@ const Editor = () => {
               {!isCropEnabled && !isDraw && (
                 <div className="flex justify-between items-center">
                   <div className="flex">
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={handleUndo}
-                    >
-                      <img src={undoIcon} width="15px"></img>
-                    </div>
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-r-lg border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={handleRedo}
-                    >
-                      <img src={redoIcon} width="15px"></img>
-                    </div>
+                    <Tooltip title="Undo" placement="top">
+                      <div
+                        className="flex justify-center items-center h-8 w-8 bg-[#101010] border-[1px] rounded-l-md border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                        onClick={handleUndo}
+                      >
+                        <img src={undoIcon} width="12px"></img>
+                      </div>
+                    </Tooltip>
+                    <Tooltip title="Redo" placement="top">
+                      <div
+                        className="flex justify-center items-center h-8 w-8 bg-[#101010] border-[1px] rounded-r-md border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                        onClick={handleRedo}
+                      >
+                        <img src={redoIcon} width="12px"></img>
+                      </div>
+                    </Tooltip>
                   </div>
                   <div className="flex">
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-l-lg border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={enableCrop}
-                    >
-                      <img src={cropIcon} width="15px"></img>
-                    </div>
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={handleRotateRight}
-                    >
-                      <img src={rotateIcon} width="15px"></img>
-                    </div>
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={handleZoomIn}
-                    >
-                      <img src={zoomInIcon} width="15px"></img>
-                    </div>
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={handleZoomOut}
-                    >
-                      <img src={zoomOutIcon} width="15px"></img>
-                    </div>
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={handleFlipHorizontal}
-                    >
-                      <img src={horizontalFlipIcon} width="15px"></img>
-                    </div>
-                    <div
-                      className="flex justify-center items-center h-9 w-9 bg-[#101010] border-[1px] rounded-r-lg border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
-                      onClick={handleFlipVertical}
-                    >
-                      <img src={verticalFlipIcon} width="15px"></img>
-                    </div>
+                    <Tooltip title="Crop" placement="top">
+                      <div
+                        className="flex justify-center items-center h-8 w-8 bg-[#101010] border-[1px] rounded-l-md border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                        onClick={enableCrop}
+                      >
+                        <img src={cropIcon} width="12px"></img>
+                      </div>
+                    </Tooltip>
+                    <Tooltip title="Rotate" placement="top">
+                      <div
+                        className="flex justify-center items-center h-8 w-8 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                        onClick={handleRotateRight}
+                      >
+                        <img src={rotateIcon} width="12px"></img>
+                      </div>
+                    </Tooltip>
+                    <Tooltip title="Zoom In" placement="top">
+                      <div
+                        className="flex justify-center items-center h-8 w-8 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                        onClick={handleZoomIn}
+                      >
+                        <img src={zoomInIcon} width="12px"></img>
+                      </div>
+                    </Tooltip>
+                    <Tooltip title="Zoom Out" placement="top">
+                      <div
+                        className="flex justify-center items-center h-8 w-8 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                        onClick={handleZoomOut}
+                      >
+                        <img src={zoomOutIcon} width="12px"></img>
+                      </div>
+                    </Tooltip>
+                    <Tooltip title="Flip Horizontal" placement="top">
+                      <div
+                        className="flex justify-center items-center h-8 w-8 bg-[#101010] border-[1px] border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                        onClick={handleFlipHorizontal}
+                      >
+                        <img src={horizontalFlipIcon} width="12px"></img>
+                      </div>
+                    </Tooltip>
+                    <Tooltip title="Flip Vertical" placement="top">
+                      <div
+                        className="flex justify-center items-center h-8 w-8 bg-[#101010] border-[1px] rounded-r-md border-[#333333] cursor-pointer hover:bg-[#444444] transition-all duration-200"
+                        onClick={handleFlipVertical}
+                      >
+                        <img src={verticalFlipIcon} width="12px"></img>
+                      </div>
+                    </Tooltip>
                   </div>
                 </div>
               )}

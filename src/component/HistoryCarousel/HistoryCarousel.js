@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { arrowIcon, addIcon } from "../../assets";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCanvasImage } from "../../redux/slices/sidebarSlice";
+import { Tooltip } from "@mui/material";
 
 const HistoryCarousel = ({ handleUploadImageClick }) => {
   const scrollableContainerRef = useRef(null);
@@ -46,12 +47,14 @@ const HistoryCarousel = ({ handleUploadImageClick }) => {
         className="h-full w-full flex flex-col gap-2 overflow-hidden"
         ref={scrollableContainerRef}
       >
-        <div
-          className="size-[80px] min-h-[80px] flex justify-center items-center transition-all duration-200 bg-[#171717] hover:bg-[#242424] border-[1px] border-[#1C1C1C] rounded-lg cursor-pointer"
-          onClick={handleUploadImageClick}
-        >
-          <img src={addIcon}></img>
-        </div>
+        <Tooltip title="Upload" placement="right">
+          <div
+            className="size-[80px] min-h-[80px] flex justify-center items-center transition-all duration-200 bg-[#171717] hover:bg-[#242424] border-[1px] border-[#1C1C1C] rounded-lg cursor-pointer"
+            onClick={handleUploadImageClick}
+          >
+            <img src={addIcon}></img>
+          </div>
+        </Tooltip>
         {history.map((each, index) => (
           <div
             key={index}
