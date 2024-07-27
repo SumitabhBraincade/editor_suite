@@ -8,7 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import GoogleSingin from "../GoogleSingin/GoogleSingin";
 import { checkTokenExpiration } from "../Utils/auth";
-import { updateCallSaveImage } from "../../redux/slices/sidebarSlice";
+import {
+  updateCallSaveImage,
+  updateUserLoggedIn,
+} from "../../redux/slices/sidebarSlice";
 
 const Sidebar = () => {
   const [tab, setTab] = useState("image");
@@ -20,6 +23,7 @@ const Sidebar = () => {
   useEffect(() => {
     const handleUserTokenChange = () => {
       setUserToken(Cookies.get("userToken"));
+      dispatch(updateUserLoggedIn(true));
     };
 
     window.addEventListener("userTokenChange", handleUserTokenChange);

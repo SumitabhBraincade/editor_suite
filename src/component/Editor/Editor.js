@@ -72,6 +72,7 @@ const Editor = () => {
   const drawPrompt = useSelector((state) => state.sidebar.drawPrompt);
   const modifyPrompt = useSelector((state) => state.sidebar.modifyPrompt);
   const canvasImage = useSelector((state) => state.sidebar.canvasImage);
+  const userLoggedIn = useSelector((state) => state.sidebar.userLoggedIn);
 
   const dispatch = useDispatch();
 
@@ -550,31 +551,32 @@ const Editor = () => {
   };
 
   const saveAsset = async () => {
-    setIsLoading(true);
+    if (cropperRef.current) {
+      setIsLoading(true);
+      const canvas = cropperRef.current.cropper.getCroppedCanvas();
+      canvas.toBlob(async (blob) => {
+        const formData = new FormData();
+        formData.append("image_file", blob, "canvas_image.png");
+        formData.append("image_name", "canvas_image.png");
 
-    let originalAsset = canvasImage;
-    originalAsset = await convertToBlob(originalAsset);
-
-    const formData = new FormData();
-    formData.append("image_file", originalAsset, "originalAsset.png");
-    formData.append("image_name", "originalAsset.png");
-
-    try {
-      const response = await axiosInstance.post(
-        imageSuiteUrl + "/save",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            accept: "application/json",
-            Authorization: `Bearer ${userToken}`,
-          },
+        try {
+          const response = await axiosInstance.post(
+            imageSuiteUrl + "/save",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                accept: "application/json",
+                Authorization: `Bearer ${userToken}`,
+              },
+            }
+          );
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          setIsLoading(false);
         }
-      );
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error during API call:", error);
-      setIsLoading(false);
+      }, "image/png");
     }
   };
 
@@ -600,7 +602,7 @@ const Editor = () => {
       dispatch(updateCallSaveImage(false));
     }
     getHistory();
-  }, [callSaveImage]);
+  }, [callSaveImage, userLoggedIn]);
 
   const iterateAsset = async () => {
     saveToHistory();

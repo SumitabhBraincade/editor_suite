@@ -13,6 +13,7 @@ const initialState = {
   canvasImage: "",
   callSaveImage: false,
   callUpscaler: false,
+  userLoggedIn: false,
 };
 
 const sidebarSlice = createSlice({
@@ -55,6 +56,9 @@ const sidebarSlice = createSlice({
     updateCallUpscaler: (state, action) => {
       state.callUpscaler = action.payload;
     },
+    updateUserLoggedIn: (state, action) => {
+      state.userLoggedIn = action.payload;
+    },
   },
 });
 
@@ -71,5 +75,6 @@ export const {
   updateCanvasImage,
   updateCallSaveImage,
   updateCallUpscaler,
+  updateUserLoggedIn,
 } = sidebarSlice.actions;
 export default sidebarSlice.reducer;
