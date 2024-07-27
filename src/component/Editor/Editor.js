@@ -580,7 +580,7 @@ const Editor = () => {
 
   const getHistory = async () => {
     try {
-      const response = await axiosInstance.get("/user/fetch_data", {
+      const response = await axiosInstance.get(imageSuiteUrl + "/history", {
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${userToken}`,
@@ -590,6 +590,7 @@ const Editor = () => {
       dispatch(updateHistory(response.data.data));
     } catch (error) {
       console.error("Error during API call:", error);
+      window.alert("Please log in to access platform features !");
     }
   };
 
@@ -598,7 +599,7 @@ const Editor = () => {
       saveAsset();
       dispatch(updateCallSaveImage(false));
     }
-    // getHistory();
+    getHistory();
   }, [callSaveImage]);
 
   const iterateAsset = async () => {

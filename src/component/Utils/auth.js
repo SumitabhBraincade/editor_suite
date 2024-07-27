@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-export const setUserToken = (token, expiresInMinutes = 5) => {
+export const setUserToken = (token, expiresInMinutes = 720) => {
   const expirationTime = new Date(
     new Date().getTime() + expiresInMinutes * 60 * 1000
   );

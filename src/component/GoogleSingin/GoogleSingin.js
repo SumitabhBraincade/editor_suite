@@ -51,8 +51,8 @@ const GoogleSingin = () => {
         profileImage: data.picture,
       });
 
-      // const userToken = response.data.data.profileId;
-      // setUserToken(userToken);
+      const userToken = response.data.data.test_token;
+      setUserToken(userToken);
     } catch (error) {
       console.error("Error during API call", error.response.data);
     }
