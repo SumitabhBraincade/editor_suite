@@ -580,7 +580,7 @@ const Editor = () => {
 
   const getHistory = async () => {
     try {
-      const response = await axiosInstance.get(imageSuiteUrl + "/history", {
+      const response = await axiosInstance.get("/user/fetch_data", {
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${userToken}`,
@@ -598,7 +598,7 @@ const Editor = () => {
       saveAsset();
       dispatch(updateCallSaveImage(false));
     }
-    getHistory();
+    // getHistory();
   }, [callSaveImage]);
 
   const iterateAsset = async () => {
