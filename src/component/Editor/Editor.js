@@ -38,8 +38,14 @@ import { convertToBlob } from "../Utils/convertToBlob";
 import HistoryCarousel from "../HistoryCarousel/HistoryCarousel";
 import Cookies from "js-cookie";
 import { Tooltip } from "@mui/material";
+import { useLocation } from "react-router-dom";
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 const Editor = () => {
+  const query = useQuery();
   const cropperRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -81,20 +87,25 @@ const Editor = () => {
   const imageSuiteUrl = "/imageSuite";
 
   useEffect(() => {
-    const fetchImageAsBlob = async () => {
-      const imageUrl =
-        "https://aicade-ui-assets.s3.amazonaws.com/default/88905d60-8075-4ab4-b8a4-1abd0b136f31/image_4_enemy_enemy_.png";
-      try {
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        dispatch(updateCanvasImage(url));
-      } catch (error) {
-        console.error("Error fetching image:", error);
-      }
-    };
+    const imageUrl = query.get("image");
+    if (imageUrl) {
+      const fetchImageAsBlob = async () => {
+        // const imageUrl =
+        //   "https://aicade-ui-assets.s3.amazonaws.com/default/88905d60-8075-4ab4-b8a4-1abd0b136f31/image_4_enemy_enemy_.png";
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          dispatch(updateCanvasImage(url));
+        } catch (error) {
+          console.error("Error fetching image:", error);
+        }
+      };
 
-    fetchImageAsBlob();
+      fetchImageAsBlob();
+    } else {
+      window.alert("Please Upload a photo to edit !");
+    }
 
     return () => {
       if (canvasImage) {
