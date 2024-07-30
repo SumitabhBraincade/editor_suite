@@ -39,6 +39,7 @@ import HistoryCarousel from "../HistoryCarousel/HistoryCarousel";
 import Cookies from "js-cookie";
 import { Tooltip } from "@mui/material";
 import { useLocation } from "react-router-dom";
+import Alert from "../../common/Alert";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -65,6 +66,7 @@ const Editor = () => {
   const [isUpload, setIsUpload] = useState(false);
   const [context, setContext] = useState(null);
   const [downloadMouseIn, setDownloadMouseIn] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const isDraw = useSelector((state) => state.sidebar.draw);
   const isErase = useSelector((state) => state.sidebar.erase);
@@ -103,8 +105,6 @@ const Editor = () => {
       };
 
       fetchImageAsBlob();
-    } else {
-      window.alert("Please Upload a photo to edit !");
     }
 
     return () => {
@@ -355,7 +355,11 @@ const Editor = () => {
   };
 
   const handleArtStyle = async (style) => {
-    saveToHistory();
+    if (canvasImage === "") {
+      window.alert("Canvas image is empty. Please upload an image first.");
+      return;
+    }
+
     if (cropperRef.current) {
       setIsLoading(true);
       const canvas = cropperRef.current.cropper.getCroppedCanvas();
@@ -381,7 +385,7 @@ const Editor = () => {
           dispatch(updateCanvasImage(blobURL));
           setIsLoading(false);
         } catch (error) {
-          console.error("Error uploading file:", error);
+          setErrorMessage(error.response.data.detail);
           setIsLoading(false);
         }
       }, "image/png");
@@ -389,9 +393,14 @@ const Editor = () => {
   };
 
   const handleRemoveBackground = async () => {
-    saveToHistory();
-    setIsLoading(true);
+    if (canvasImage === "") {
+      window.alert("Canvas image is empty. Please upload an image first.");
+      return;
+    }
+
     if (cropperRef.current) {
+      saveToHistory();
+      setIsLoading(true);
       const canvas = cropperRef.current.cropper.getCroppedCanvas();
       canvas.toBlob(async (blob) => {
         const formData = new FormData();
@@ -417,9 +426,8 @@ const Editor = () => {
           const url = URL.createObjectURL(blob);
           dispatch(updateCanvasImage(url));
         } catch (error) {
-          console.error("Error uploading file:", error);
+          setErrorMessage(error.response.data.detail);
         }
-        dispatch(updateCallRemoveBackground(false));
         setIsLoading(false);
       }, "image/png");
     }
@@ -450,6 +458,11 @@ const Editor = () => {
   };
 
   const callGenerativeFillAPI = async () => {
+    if (canvasImage === "") {
+      window.alert("Canvas image is empty. Please upload an image first.");
+      return;
+    }
+
     saveToHistory();
     setIsLoading(true);
 
@@ -485,12 +498,17 @@ const Editor = () => {
       const blobURL = await convertToBlobUrl(url);
       dispatch(updateCanvasImage(blobURL));
     } catch (error) {
-      console.error("Error uploading file:", error);
+      setErrorMessage(error.response.data.detail);
     }
     setIsLoading(false);
   };
 
   const handleUpScalerClick = async () => {
+    if (canvasImage === "") {
+      window.alert("Canvas image is empty. Please upload an image first.");
+      return;
+    }
+
     saveToHistory();
     setIsLoading(true);
     if (cropperRef.current) {
@@ -517,15 +535,20 @@ const Editor = () => {
           const blobURL = await convertToBlobUrl(url);
           dispatch(updateCanvasImage(blobURL));
         } catch (error) {
-          console.error("Error uploading file:", error);
+          console.log(error.response.data.detail);
+          setErrorMessage(error.response.data.detail);
         }
-        dispatch(updateCallUpscaler(false));
         setIsLoading(false);
       }, "image/png");
     }
   };
 
   const callOutlineAPI = async () => {
+    if (canvasImage === "") {
+      window.alert("Canvas image is empty. Please upload an image first.");
+      return;
+    }
+
     saveToHistory();
     setIsLoading(true);
 
@@ -556,7 +579,7 @@ const Editor = () => {
       const blobURL = await convertToBlobUrl(url);
       dispatch(updateCanvasImage(blobURL));
     } catch (error) {
-      console.error("Error uploading file:", error);
+      setErrorMessage(error.response.data.detail);
     }
     setIsLoading(false);
   };
@@ -584,7 +607,7 @@ const Editor = () => {
           );
           setIsLoading(false);
         } catch (error) {
-          console.error("Error uploading file:", error);
+          setErrorMessage(error.response.data.detail);
           setIsLoading(false);
         }
       }, "image/png");
@@ -602,8 +625,7 @@ const Editor = () => {
 
       dispatch(updateHistory(response.data.data));
     } catch (error) {
-      console.error("Error during API call:", error);
-      window.alert("Please log in to access platform features !");
+      setErrorMessage(error.response.data.detail);
     }
   };
 
@@ -616,6 +638,11 @@ const Editor = () => {
   }, [callSaveImage, userLoggedIn]);
 
   const iterateAsset = async () => {
+    if (canvasImage === "") {
+      window.alert("Canvas image is empty. Please upload an image first.");
+      return;
+    }
+
     saveToHistory();
     setIsLoading(true);
 
@@ -648,7 +675,7 @@ const Editor = () => {
       dispatch(updateCanvasImage(blobURL));
       setIsLoading(false);
     } catch (error) {
-      console.error("Error during API call:", error);
+      setErrorMessage(error.response.data.detail);
       setIsLoading(false);
     }
   };
@@ -660,6 +687,7 @@ const Editor = () => {
     }
     if (callRemoveBackground) {
       handleRemoveBackground();
+      dispatch(updateCallRemoveBackground(false));
     }
     if (drawPrompt.length != 0) {
       callGenerativeFillAPI();
@@ -672,6 +700,7 @@ const Editor = () => {
     }
     if (callUpscaler) {
       handleUpScalerClick();
+      dispatch(updateCallUpscaler(false));
     }
   }, [
     callArtStyle,
@@ -680,6 +709,14 @@ const Editor = () => {
     modifyPrompt,
     callUpscaler,
   ]);
+
+  useEffect(() => {
+    if (errorMessage !== "") {
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 2000);
+    }
+  }, [errorMessage]);
 
   return (
     <div
@@ -982,6 +1019,7 @@ const Editor = () => {
         {isUpload && <UploadImage setShow={setIsUpload} />}
       </Popup>
       <HistoryCarousel handleUploadImageClick={handleUploadImageClick} />
+      <Alert message={errorMessage} />
     </div>
   );
 };
